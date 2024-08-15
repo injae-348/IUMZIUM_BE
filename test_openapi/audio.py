@@ -1,19 +1,26 @@
+from flask import jsonify
 import os
 import requests
 from pydub import AudioSegment
 
 
-def download_audio(url, output_path):
-    """URL에서 오디오 파일을 다운로드합니다."""
+def handle_audio_file(output_file_path, clova_api_key):
+    """파일을 받아서 텍스트로 변환한 후 결과를 반환합니다."""
     try:
-        with requests.get(url, stream=True) as response:
-            response.raise_for_status()
-            with open(output_path, 'wb') as file:
-                for chunk in response.iter_content(chunk_size=8192):
-                    file.write(chunk)
-    except Exception as e:
-        raise RuntimeError(f"Audio 다운로드 중 에러: {str(e)}")
+        # Clova Speech API를 사용하여 음성 파일을 텍스트로 변환
+        transcription_result = transcribe_audio(
+            output_file_path, clova_api_key, 'Kor')
 
+        # 결과 처리 및 파일 삭제
+        if os.path.exists(output_file_path):
+            os.remove(output_file_path)
+
+        if transcription_result and 'text' in transcription_result:
+            return jsonify({"transcription": transcription_result['text']})
+        else:
+            return jsonify({"출력 결과 에러": "Transcription failed"}), 500
+    except Exception as e:
+        return jsonify({"모든 에러": str(e)}), 500
 
 def convert_to_m4a(input_path, output_path):
     """오디오 파일을 m4a 형식으로 변환합니다."""
@@ -23,26 +30,6 @@ def convert_to_m4a(input_path, output_path):
         audio.export(output_path, format="mp4")  # 또는 format="ipod"
     except Exception as e:
         raise RuntimeError(f"Audio 변환 중 에러: {str(e)}")
-
-
-def process_audio(audio_url):
-    """URL에서 오디오를 다운로드하고 m4a 형식으로 변환합니다."""
-    base_dir = os.path.dirname(__file__)
-    temp_wav_path = os.path.join(base_dir, "temp_audio.wav")  # 임시 WAV 파일 경로
-    output_m4a_path = os.path.join(base_dir, "temp_audio.m4a")  # 최종 m4a 파일 경로
-
-    try:
-        # 오디오 다운로드
-        download_audio(audio_url, temp_wav_path)
-
-        # m4a 형식으로 변환
-        convert_to_m4a(temp_wav_path, output_m4a_path)
-
-        return output_m4a_path  # 변환된 m4a 파일의 경로를 반환
-    finally:
-        # 임시 WAV 파일 삭제
-        if os.path.exists(temp_wav_path):
-            os.remove(temp_wav_path)
 
 
 def transcribe_audio(file_path, api_key, lang='Kor'):
@@ -60,11 +47,12 @@ def transcribe_audio(file_path, api_key, lang='Kor'):
         with open(file_path, 'rb') as audio_file:
             response = requests.post(
                 url, headers=headers, params=params, data=audio_file)
-        response.raise_for_status()
+        response.raise_for_status()  # HTTP 오류 발생 시 예외 발생
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"API request failed: {e}")
+        print(f"API 요청 실패: {e}")
+        print(f"응답 내용: {response.text}")  # 응답 내용을 로그에 출력
         return {"Clova 번역 요청 에러": "Failed to process the audio file"}
     except Exception as e:
-        print(f"An unexpected error occurred: {str(e)}")
+        print(f"예상치 못한 에러 발생: {str(e)}")
         return {"Clova 번역 요청 모르는 에러": str(e)}
