@@ -8,6 +8,8 @@ test_nginx/
 Dockerfile
 start.sh
 docker-compose.yml
+index.html
+upload.js
 
 ### Flask ###
 instance/*
