@@ -4,6 +4,10 @@
 app/
 test_rasa/
 secrets.json
+test_nginx/
+Dockerfile
+start.sh
+docker-compose.yml
 
 ### Flask ###
 instance/*
