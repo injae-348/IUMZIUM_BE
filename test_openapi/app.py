@@ -4,10 +4,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 
-CORS(app)
-
-# 특정 도메인만 허용
-# CORS(app, resources={r"/api/*": {"origins": "https://example.com"}})
+CORS(app, resources={r"/api/*":{"origins":"*"}})
 
 app.register_blueprint(api_bp)
 
