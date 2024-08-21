@@ -1,15 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/flask
 # Edit at https://www.toptal.com/developers/gitignore?templates=flask
 
-app/
-test_rasa/
 secrets.json
-test_nginx/
-Dockerfile
-start.sh
-docker-compose.yml
-index.html
-upload.js
 
 ### Flask ###
 instance/*
