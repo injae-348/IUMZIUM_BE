@@ -21,6 +21,6 @@ def create_app():
     from routes import api_bp
     app.register_blueprint(api_bp)
 
-    CORS(app, resources={r"/*":{"origins":"*"}}, headers=['Content-Type'])
+    CORS(app, resources={r"/*":{"origins":"*"}})
 
     return app
