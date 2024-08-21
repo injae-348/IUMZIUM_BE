@@ -1,11 +1,16 @@
 import requests
 
-def send_message_to_rasa(rasa_req_dto):
-    rasa_url = 'https://b2a4-124-53-16-60.ngrok-free.app/webhooks/rest/webhook'
+def send_message_to_rasa(sender, message):
+    print("sender: {}".format(sender))
+    print("message: {}".format(message))
+    rasa_url = 'https://c013-36-38-187-106.ngrok-free.app/webhooks/rest/webhook'
+    # rasa_url = 'http://192.168.0.122:5005/webhooks/rest/webhook'
+
     payload = {
-        'sender': rasa_req_dto.sender,
-        'message': rasa_req_dto.message
+        'sender': sender,
+        'message': message
     }
     response = requests.post(rasa_url, json=payload)
+    print("rasa server response: {}".format(response))
     response.raise_for_status()
     return response.json()
