@@ -3,7 +3,7 @@ import requests
 def send_message_to_rasa(sender, message):
     print("sender: {}".format(sender))
     print("message: {}".format(message))
-    rasa_url = 'https://c013-36-38-187-106.ngrok-free.app/webhooks/rest/webhook'
+    rasa_url = 'https://4d9e-36-38-187-106.ngrok-free.app/webhooks/rest/webhook'
     # rasa_url = 'http://192.168.0.122:5005/webhooks/rest/webhook'
 
     payload = {
